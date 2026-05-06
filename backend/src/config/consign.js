@@ -1,10 +1,14 @@
-import consign from "consign";
+const path = require("path");
+const consign = require("consign");
 
-export default function loadConsign(app) {
-  consign({ cwd: "src" })
-    .include("config")
+module.exports = (app) => {
+  consign({
+    cwd: path.join(__dirname, ".."),
+    verbose: true,
+  })
+    .include("config/db.js")
     .then("middlewares")
     .then("services")
     .then("api")
     .into(app);
-}
+};
