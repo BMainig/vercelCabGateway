@@ -1,17 +1,18 @@
 import type { LoginResponse } from '../types/auth'
 
 const AUTH_TOKEN_KEY = 'authToken'
-const LOGIN_URL = 'http://localhost:3001/api/auth/login'
-const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true' || import.meta.env.DEV
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+const LOGIN_URL = `${API_BASE_URL}/api/auth/login`
+const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true'
 
 function buildMockLogin(username: string, password: string): LoginResponse {
   if (username !== 'admin' || password !== 'admin123') {
-    throw new Error('Usuario ou senha invalidos no modo mock.')
+    throw new Error('Usuario ou senha invalidos.')
   }
 
   return {
     success: true,
-    message: 'Login realizado com sucesso (mock).',
+    message: 'Login realizado com sucesso.',
     token: 'mock-token-cabgateway',
     user: {
       user_id: 1,
@@ -53,4 +54,8 @@ export async function loginWithBasicAuth(
 
 export function hasAuthToken(): boolean {
   return Boolean(localStorage.getItem(AUTH_TOKEN_KEY))
+}
+
+export function clearAuthToken(): void {
+  localStorage.removeItem(AUTH_TOKEN_KEY)
 }
