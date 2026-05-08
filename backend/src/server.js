@@ -1,22 +1,16 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import loadConsign from "./config/consign.js";
-import { testConnection } from "./config/db.js";
+require("dotenv").config();
 
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const loadConsign = require("./config/consign");
 
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// 🔥 injeta tudo no app
 loadConsign(app);
-
-// 🔥 registrar rotas depois do consign
-app.use("/api/health", app.api.health);
 
 app.get("/", (req, res) => {
   res.json({
@@ -25,14 +19,37 @@ app.get("/", (req, res) => {
   });
 });
 
+app.post("/api/auth/login", app.api.auth.login);
+app.get("/api/auth/me", app.middlewares.auth, app.api.auth.me);
+
+app.get("/api/users", app.middlewares.auth, app.api.users.list);
+app.get("/api/users/:id", app.middlewares.auth, app.api.users.getById);
+app.post("/api/users", app.middlewares.auth, app.api.users.create);
+app.put("/api/users/:id", app.middlewares.auth, app.api.users.update);
+app.patch(
+  "/api/users/:id/password",
+  app.middlewares.auth,
+  app.api.users.changePassword
+);
+app.patch(
+  "/api/users/:id/deactivate",
+  app.middlewares.auth,
+  app.api.users.deactivate
+);
+
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, async () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-
+async function start() {
   try {
-    await testConnection();
-  } catch (err) {
-    console.error("Erro DB:", err.message);
+    await app.config.db.initDatabase();
+
+    app.listen(PORT, () => {
+      console.log(`CabGateway backend rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Erro ao iniciar CabGateway:", error);
+    process.exit(1);
   }
-});
+}
+
+start();  
