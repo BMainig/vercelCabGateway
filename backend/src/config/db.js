@@ -74,6 +74,79 @@ async function initDatabase() {
         ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+  await db.query(`
+  CREATE TABLE IF NOT EXISTS purchase_order_items (
+    id INT NOT NULL AUTO_INCREMENT,
+    centro VARCHAR(80) NOT NULL,
+    deposito VARCHAR(80) NOT NULL,
+    material_number VARCHAR(120) NOT NULL,
+    expected_quantity INT NOT NULL DEFAULT 0,
+    criado_por VARCHAR(120) NULL,
+    serial_range TEXT NULL,
+    item VARCHAR(120) NOT NULL,
+    status ENUM('pending', 'in_progress', 'complete', 'incomplete', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_purchase_order_item (centro, deposito, material_number, item),
+    KEY idx_purchase_order_items_status (status),
+    KEY idx_purchase_order_items_material (material_number),
+    KEY idx_purchase_order_items_item (item)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+await db.query(`
+  CREATE TABLE IF NOT EXISTS import_logs (
+    id INT NOT NULL AUTO_INCREMENT,
+    filename VARCHAR(255) NOT NULL,
+    status ENUM('success', 'error') NOT NULL,
+    total_rows INT NOT NULL DEFAULT 0,
+    imported_rows INT NOT NULL DEFAULT 0,
+    error_message TEXT NULL,
+    imported_by INT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS expected_serials (
+    id INT NOT NULL AUTO_INCREMENT,
+    purchase_order_item_id INT NOT NULL,
+    serial VARCHAR(120) NOT NULL,
+    received TINYINT NOT NULL DEFAULT 0,
+    received_at DATETIME NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_expected_serial (serial),
+    KEY idx_expected_serials_order_item (purchase_order_item_id),
+    CONSTRAINT fk_expected_serials_order_item
+      FOREIGN KEY (purchase_order_item_id)
+      REFERENCES purchase_order_items(id)
+      ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+await db.query(`
+  CREATE TABLE IF NOT EXISTS import_watchers (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(120) NOT NULL,
+    mode ENUM('file', 'directory') NOT NULL DEFAULT 'file',
+    target_path VARCHAR(500) NOT NULL,
+    interval_days INT NOT NULL DEFAULT 0,
+    interval_hours INT NOT NULL DEFAULT 0,
+    interval_minutes INT NOT NULL DEFAULT 5,
+    enabled TINYINT NOT NULL DEFAULT 1,
+    last_signature VARCHAR(255) NULL,
+    last_checked_at DATETIME NULL,
+    last_imported_at DATETIME NULL,
+    last_status ENUM('idle', 'success', 'error', 'unchanged') NOT NULL DEFAULT 'idle',
+    last_message TEXT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    KEY idx_import_watchers_enabled (enabled)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
  /* await db.query(`
     INSERT INTO users (
   username,
