@@ -113,29 +113,27 @@ export function OrderDetailsPage() {
                 </tr>
               </thead>
               <tbody>
-              {filteredItems.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="empty-row">
-                    Nenhum item encontrado.
-                  </td>
-                </tr>
-              ) : (
-                filteredItems.map((item, index) => (
-                  <tr key={item.id} className={index % 2 === 0 ? 'row-even' : 'row-odd'}>
-                    <td className="cell-strong">{item.id}</td>
-                    <td>
-                      <span
-                        className={`item-status item-status-${item.status.toLowerCase()}`}
-                      >
-                        {item.status.toUpperCase()}
-                      </span>
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="empty-row">
+                      Nenhum item encontrado.
                     </td>
-                    <td className="cell-strong">{item.material}</td>
-                    <td className="cell-strong">{formatDisplayDate(item.readDate)}</td>
-                    <td className="cell-strong">{formatDisplayOperator(item.operator)}</td>
                   </tr>
-                ))
-              )}
+                ) : (
+                  filteredItems.map((item, index) => (
+                    <tr key={item.id} className={index % 2 === 0 ? 'row-even' : 'row-odd'}>
+                      <td className="cell-strong">{item.id}</td>
+                      <td>
+                        <span className={`item-status item-status-${item.status.toLowerCase()}`}>
+                          {item.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="cell-strong">{item.material}</td>
+                      <td className="cell-strong">{formatDisplayDate(item.readDate)}</td>
+                      <td className="cell-strong">{formatDisplayOperator(item.operator)}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

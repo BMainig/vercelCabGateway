@@ -1,71 +1,63 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppHeader } from '../components/AppHeader'
+import { uploadCsv } from '../services/importService'
+import { fetchPendingOrders } from '../services/readingsService'
 import { getOrders, setOrders } from '../services/ordersStore'
 import type { Order } from '../types/order'
-import { ensureOrderItems } from '../utils/orderItems'
-import { parseOrdersFromCsv } from '../utils/csvImport'
 
-const SAMPLE_ORDERS: Order[] = [
-  ensureOrderItems({
-    id: '4300002838',
-    lidosRead: 10,
-    lidosTotal: 15,
-    status: 'Incompleto',
-    items: [],
-  }),
-  ensureOrderItems({
-    id: '4300002839',
-    lidosRead: 0,
-    lidosTotal: 214,
-    status: 'Pendente',
-    items: [],
-  }),
-  ensureOrderItems({
-    id: '4300002840',
-    lidosRead: 120,
-    lidosTotal: 120,
-    status: 'Completo',
-    items: [],
-  }),
-  ensureOrderItems({
-    id: '4300002841',
-    lidosRead: 15,
-    lidosTotal: 90,
-    status: 'Incompleto',
-    items: [],
-  }),
-  ensureOrderItems({
-    id: '4300002842',
-    lidosRead: 0,
-    lidosTotal: 52,
-    status: 'Pendente',
-    items: [],
-  }),
-]
+const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true'
 
 function syncOrders(nextOrders: Order[]): Order[] {
-  const prepared = nextOrders.map((order) => ensureOrderItems(order))
-  setOrders(prepared)
-  return prepared
+  setOrders(nextOrders)
+  return nextOrders
 }
 
 export function HomePage() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [orders, setOrdersState] = useState<Order[]>(() => {
-    const stored = getOrders()
-    return stored.length > 0 ? stored : syncOrders(SAMPLE_ORDERS)
-  })
+  const [orders, setOrdersState] = useState<Order[]>(() => getOrders())
   const [searchQuery, setSearchQuery] = useState('')
   const [importMessage, setImportMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(!USE_AUTH_MOCK)
+  const [loadError, setLoadError] = useState('')
+
+  const loadOrders = useCallback(async (query?: string) => {
+    if (USE_AUTH_MOCK) return
+
+    setIsLoading(true)
+    setLoadError('')
+
+    try {
+      const data = await fetchPendingOrders({
+        q: query?.trim() || undefined,
+        limit: 200,
+      })
+      setOrdersState(syncOrders(data))
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Nao foi possivel carregar os pedidos.'
+      setLoadError(message)
+      setOrdersState([])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    setOrders(orders)
-  }, [orders])
+    if (USE_AUTH_MOCK) return
+
+    const timeout = setTimeout(() => {
+      void loadOrders(searchQuery)
+    }, 300)
+
+    return () => clearTimeout(timeout)
+  }, [loadOrders, searchQuery])
 
   const filteredOrders = useMemo(() => {
+    if (!USE_AUTH_MOCK) return orders
+
     const query = searchQuery.trim().toLowerCase()
     if (!query) return orders
 
@@ -90,19 +82,23 @@ export function HomePage() {
 
     if (!file) return
 
-    try {
-      const content = await file.text()
-      const importedOrders = parseOrdersFromCsv(content)
+    setImportMessage('')
 
-      if (importedOrders.length === 0) {
-        setImportMessage('Nenhum pedido valido encontrado no CSV.')
+    try {
+      if (USE_AUTH_MOCK) {
+        setImportMessage('Importacao via API desativada no modo mock.')
         return
       }
 
-      setOrdersState(syncOrders(importedOrders))
-      setImportMessage(`${importedOrders.length} pedido(s) importado(s) com sucesso.`)
-    } catch {
-      setImportMessage('Nao foi possivel importar o arquivo CSV.')
+      const result = await uploadCsv(file)
+      await loadOrders(searchQuery)
+      setImportMessage(
+        `${result.imported_rows ?? 0} linha(s) importada(s) com sucesso.`,
+      )
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Nao foi possivel importar o arquivo CSV.'
+      setImportMessage(message)
     }
   }
 
@@ -117,12 +113,16 @@ export function HomePage() {
             className="import-csv-btn"
             onClick={handleImportCsvClick}
             aria-label="Importar pedidos via CSV"
-            title="Importar CSV"
+            title="Importar CSV (formato SAP: centro;deposito;...)"
           >
             +
           </button>
           <h1>Pedidos pendentes</h1>
-          <button type="button" className="start-receiving-btn">
+          <button
+            type="button"
+            className="start-receiving-btn"
+            onClick={() => navigate('/home/leitura')}
+          >
             <span>Iniciar recebimento</span>
             <span className="play-icon" aria-hidden="true">
               ▶
@@ -151,6 +151,8 @@ export function HomePage() {
         </label>
 
         {importMessage && <p className="import-message">{importMessage}</p>}
+        {loadError && <p className="import-message">{loadError}</p>}
+        {isLoading && <p className="import-message">Carregando pedidos...</p>}
 
         <div className="orders-table-wrapper">
           <table className="orders-table">
@@ -162,7 +164,7 @@ export function HomePage() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.length === 0 ? (
+              {filteredOrders.length === 0 && !isLoading ? (
                 <tr>
                   <td colSpan={3} className="empty-row">
                     Nenhum pedido encontrado.

@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from '../pages/HomePage'
+import { ItemReadingPage } from '../pages/ItemReadingPage'
 import { OrderDetailsPage } from '../pages/OrderDetailsPage'
 import { LoginPage } from '../pages/LoginPage'
 import { hasAuthToken } from '../services/authService'
@@ -14,6 +15,7 @@ export function AppRoutes() {
       />
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />
+        <Route path="/home/leitura" element={<ItemReadingPage />} />
         <Route path="/home/pedido/:orderId" element={<OrderDetailsPage />} />
       </Route>
     </Routes>

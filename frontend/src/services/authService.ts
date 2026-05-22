@@ -52,8 +52,12 @@ export async function loginWithBasicAuth(
   return data
 }
 
+export function getAuthToken(): string | null {
+  return localStorage.getItem(AUTH_TOKEN_KEY)
+}
+
 export function hasAuthToken(): boolean {
-  return Boolean(localStorage.getItem(AUTH_TOKEN_KEY))
+  return Boolean(getAuthToken())
 }
 
 export function clearAuthToken(): void {

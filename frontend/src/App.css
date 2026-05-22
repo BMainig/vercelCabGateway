@@ -169,6 +169,23 @@
   padding: 0 24px;
 }
 
+.home-header-menu {
+  position: relative;
+}
+
+.home-header-menu-trigger {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.home-header-menu-trigger:hover .home-header-logo-badge {
+  filter: brightness(0.98);
+}
+
 .home-header-logo-badge {
   width: 64px;
   height: 64px;
@@ -187,6 +204,39 @@
   object-fit: contain;
   position: relative;
   left: -6px;
+}
+
+.home-header-menu-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 100;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home-header-menu-item {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  background-color: #b8e986;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: lowercase;
+  text-align: center;
+}
+
+.home-header-menu-item:hover {
+  filter: brightness(0.96);
 }
 
 .home-content {
@@ -517,4 +567,175 @@
 
 .item-status-recebido {
   color: #0f8f7a;
+}
+
+.home-layout.reading-layout {
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+.reading-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  gap: 16px;
+}
+
+.reading-title-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+}
+
+.reading-title-row h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 2rem;
+  color: #111111;
+}
+
+.reading-title-row .finish-reading-btn {
+  position: absolute;
+  right: 0;
+}
+
+.finish-reading-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  background: linear-gradient(180deg, #1b8f79 0%, #0f6f5d 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.finish-reading-btn:hover {
+  filter: brightness(0.96);
+}
+
+.reading-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reading-panel .reading-summary-bar {
+  grid-template-columns: 1fr auto;
+  border-radius: 0;
+  margin: 0;
+}
+
+.reading-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.reading-summary-label {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.reading-summary-orders {
+  font-size: 1rem;
+  text-align: right;
+}
+
+.reading-progress-bar {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid #0f6f5d;
+  background-color: #b8e986;
+  overflow: hidden;
+}
+
+.reading-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: #0f6f5d;
+  border-radius: 999px 0 0 999px;
+  transition: width 0.35s ease;
+}
+
+.reading-progress-value {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 1;
+}
+
+.reading-progress-value-read {
+  left: 14px;
+  color: #ffffff;
+}
+
+.reading-progress-value-total {
+  right: 14px;
+  color: #0f6f5d;
+}
+
+.reading-panel .reading-table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: none;
+  border-radius: 0;
+  background-color: #000000;
+}
+
+.reading-panel .reading-table thead th {
+  border-top: none;
+}
+
+.reading-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reading-table thead th {
+  background-color: #0f6f5d;
+  color: #ffffff;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 1rem;
+  position: sticky;
+  top: 0;
+}
+
+.reading-table tbody td {
+  padding: 10px 14px;
+  font-size: 0.98rem;
+  color: #ffffff;
+  background-color: #000000;
+}
+
+.reading-message {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.reading-message-ok {
+  color: #4caf50;
+}
+
+.reading-message-error {
+  color: #e53935;
 }
