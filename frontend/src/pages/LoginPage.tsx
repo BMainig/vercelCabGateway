@@ -33,7 +33,7 @@ export function LoginPage() {
     <main className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="brand-badge">
-          <img src="/cemig-logo.png" alt="CEMIG" className="brand-logo" />
+          <img src="/cemig-logo.svg" alt="CEMIG" className="brand-logo" />
         </div>
 
         <h1>Bem vindo!</h1>

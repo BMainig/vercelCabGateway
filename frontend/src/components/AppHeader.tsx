@@ -53,7 +53,7 @@ export function AppHeader() {
           aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
         >
           <span className="home-header-logo-badge">
-            <img src="/cemig-logo.png" alt="CEMIG" className="home-header-logo" />
+            <img src="/cemig-logo.svg" alt="CEMIG" className="home-header-logo" />
           </span>
         </button>
 

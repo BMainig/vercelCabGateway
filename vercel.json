@@ -1,0 +1,11 @@
+{
+  "installCommand": "cd frontend && npm ci",
+  "buildCommand": "cd frontend && VITE_USE_AUTH_MOCK=true npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

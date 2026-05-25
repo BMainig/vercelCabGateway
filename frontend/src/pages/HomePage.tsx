@@ -5,6 +5,7 @@ import { AppHeader } from '../components/AppHeader'
 import { uploadCsv } from '../services/importService'
 import { fetchPendingOrders } from '../services/readingsService'
 import { getOrders, setOrders } from '../services/ordersStore'
+import { parseOrdersFromCsv } from '../utils/csvImport'
 import type { Order } from '../types/order'
 
 const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true'
@@ -86,7 +87,16 @@ export function HomePage() {
 
     try {
       if (USE_AUTH_MOCK) {
-        setImportMessage('Importacao via API desativada no modo mock.')
+        const content = await file.text()
+        const importedOrders = parseOrdersFromCsv(content)
+
+        if (importedOrders.length === 0) {
+          setImportMessage('Nenhum pedido encontrado no CSV.')
+          return
+        }
+
+        setOrdersState(syncOrders(importedOrders))
+        setImportMessage(`${importedOrders.length} pedido(s) importado(s) no modo mock.`)
         return
       }
 

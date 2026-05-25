@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" role="img" aria-labelledby="title">
+  <title id="title">CEMIG</title>
+  <rect width="160" height="80" rx="16" fill="#fff"/>
+  <path d="M18 51 44 16l26 35H55L44 36 33 51z" fill="#22a447"/>
+  <path d="M64 51 90 16l26 35h-15L90 36 79 51z" fill="#22a447" opacity=".86"/>
+  <text x="80" y="68" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2933">CEMIG</text>
+</svg>
