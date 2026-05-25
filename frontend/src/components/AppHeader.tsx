@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthToken } from '../services/authService'
+import { CemigLogo } from './CemigLogo'
 
 export function AppHeader() {
   const navigate = useNavigate()
@@ -53,7 +54,7 @@ export function AppHeader() {
           aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
         >
           <span className="home-header-logo-badge">
-            <img src="/cemig-logo.svg" alt="CEMIG" className="home-header-logo" />
+            <CemigLogo className="home-header-logo" />
           </span>
         </button>
 

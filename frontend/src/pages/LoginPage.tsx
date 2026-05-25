@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CemigLogo } from '../components/CemigLogo'
 import { loginWithBasicAuth } from '../services/authService'
 
 export function LoginPage() {
@@ -33,7 +34,7 @@ export function LoginPage() {
     <main className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="brand-badge">
-          <img src="/cemig-logo.svg" alt="CEMIG" className="brand-logo" />
+          <CemigLogo className="brand-logo" />
         </div>
 
         <h1>Bem vindo!</h1>

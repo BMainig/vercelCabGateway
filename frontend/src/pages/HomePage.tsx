@@ -8,7 +8,7 @@ import { getOrders, setOrders } from '../services/ordersStore'
 import { parseOrdersFromCsv } from '../utils/csvImport'
 import type { Order } from '../types/order'
 
-const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true'
+const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK !== 'false'
 
 function syncOrders(nextOrders: Order[]): Order[] {
   setOrders(nextOrders)

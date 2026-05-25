@@ -3,7 +3,7 @@ import type { LoginResponse } from '../types/auth'
 const AUTH_TOKEN_KEY = 'authToken'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 const LOGIN_URL = `${API_BASE_URL}/api/auth/login`
-const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK === 'true'
+const USE_AUTH_MOCK = import.meta.env.VITE_USE_AUTH_MOCK !== 'false'
 
 function buildMockLogin(username: string, password: string): LoginResponse {
   if (username !== 'admin' || password !== 'admin123') {
