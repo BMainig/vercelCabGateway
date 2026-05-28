@@ -1,7 +1,4 @@
 {
-  "env": {
-    "VITE_USE_AUTH_MOCK": "true"
-  },
   "experimentalServices": {
     "frontend": {
       "entrypoint": "frontend",

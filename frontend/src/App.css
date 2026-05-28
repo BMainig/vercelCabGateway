@@ -43,11 +43,11 @@
 }
 
 .brand-logo {
-  width: 128px;
+  width: 110px;
   height: auto;
   display: block;
   position: relative;
-  left: -8px;
+  left: 6px;
   z-index: 1;
 }
 
@@ -198,12 +198,12 @@
 }
 
 .home-header-logo {
-  width: 72px;
+  width: 58px;
   height: auto;
   display: block;
   object-fit: contain;
   position: relative;
-  left: -4px;
+  left: 4px;
 }
 
 .home-header-menu-panel {

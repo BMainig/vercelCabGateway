@@ -1,0 +1,37 @@
+# Deploy da API no Render + MySQL externo (Railway, PlanetScale, etc.)
+
+services:
+  - type: web
+    name: cabgateway-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PORT
+        value: "3001"
+      - key: HOST
+        value: 0.0.0.0
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: CSV_IMPORT_BASE_DIR
+        value: /tmp/csv-imports
+      - key: DISABLE_IMPORT_SCHEDULER
+        value: "true"
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: cabgateway
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false

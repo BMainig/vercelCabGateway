@@ -8,7 +8,17 @@ const importsApi = require("./api/import")();
 
 const app = express();
 
-app.use(cors());
+const frontendOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: frontendOrigins.length > 0 ? frontendOrigins : true,
+    credentials: true,
+  }),
+);
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,16 +60,21 @@ app.put("/api/import-watchers/:id", app.middlewares.auth, app.api.importWatchers
 app.post("/api/import-watchers/:id/run-now", app.middlewares.auth, app.api.importWatchers.runNow);
 app.delete("/api/import-watchers/:id", app.middlewares.auth, app.api.importWatchers.remove);
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT || 3001);
+const HOST = process.env.HOST || "0.0.0.0";
 
 async function start() {
   try {
     await app.config.db.initDatabase();
 
-    await app.services.importScheduler.start(app);
+    if (process.env.DISABLE_IMPORT_SCHEDULER !== "true") {
+      await app.services.importScheduler.start(app);
+    } else {
+      console.log("Import Scheduler desativado (DISABLE_IMPORT_SCHEDULER=true).");
+    }
 
-    app.listen(PORT, () => {
-      console.log(`CabGateway backend rodando na porta ${PORT}`);
+    app.listen(PORT, HOST, () => {
+      console.log(`CabGateway backend rodando em http://${HOST}:${PORT}`);
     });
   } catch (error) {
     console.error("Erro ao iniciar CabGateway:", error);
