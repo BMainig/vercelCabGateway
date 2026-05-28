@@ -2,21 +2,38 @@ const mysql = require("mysql2/promise");
 
 let pool;
 
+function buildSslOption() {
+  if (String(process.env.DB_SSL).toLowerCase() === "true") {
+    return { rejectUnauthorized: false };
+  }
+  return undefined;
+}
+
 async function ensureDatabase() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-  });
+  if (!process.env.DB_NAME) return;
 
-  await connection.query(`
-    CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci
-  `);
+  try {
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT || 3306),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      ssl: buildSslOption(),
+    });
 
-  await connection.end();
+    await connection.query(`
+      CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`
+      CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci
+    `);
+
+    await connection.end();
+  } catch (error) {
+    console.warn(
+      `Nao foi possivel criar o database "${process.env.DB_NAME}" automaticamente (${error.code || error.message}). ` +
+        "Assumindo que o database ja existe (comum em MySQL gerenciado gratuito).",
+    );
+  }
 }
 
 function getPool() {
@@ -27,6 +44,7 @@ function getPool() {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      ssl: buildSslOption(),
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,

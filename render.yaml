@@ -31,6 +31,9 @@ services:
         sync: false
       - key: DB_NAME
         value: cabgateway
+      # DB_SSL=true para MySQL gerenciado que exige TLS (Aiven, TiDB, PlanetScale...)
+      - key: DB_SSL
+        value: "false"
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
